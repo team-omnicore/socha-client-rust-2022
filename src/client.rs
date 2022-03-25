@@ -110,7 +110,6 @@ impl<D> SCClient<D> where D: SCClientDelegate {
         // Handle events from the server
         let mut state: Option<State> = None;
         let mut game_result: Option<GameResult> = None;
-        let mut client_team: Option<Team> = None;
         loop {
             let event_xml = Element::read_from(&mut reader)?;
 
@@ -128,7 +127,7 @@ impl<D> SCClient<D> where D: SCClientDelegate {
                     match payload {
                         EventPayload::Welcome(team) => {
                             self.delegate.on_welcome(team);
-                            client_team = Some(team);
+                            self.client_team = Some(team);
                         },
                         EventPayload::GameResult(result) => {
                             self.delegate.on_game_end(&result);
