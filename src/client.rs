@@ -40,13 +40,14 @@ pub struct SCClient<D> where D: SCClientDelegate {
     delegate: D,
     debug_mode: DebugMode,
     reservation_code: Option<String>,
+    client_team: Option<Team>
     // TODO: Add game state
 }
 
 impl<D> SCClient<D> where D: SCClientDelegate {
     /// Creates a new client using the specified delegate.
     pub fn new(delegate: D, debug_mode: DebugMode, reservation_code: Option<String>) -> Self {
-        Self { delegate, debug_mode, reservation_code }
+        Self { delegate, debug_mode, reservation_code, client_team: None }
     }
     
     /// Blocks the thread and begins reading XML messages
@@ -109,6 +110,7 @@ impl<D> SCClient<D> where D: SCClientDelegate {
         // Handle events from the server
         let mut state: Option<State> = None;
         let mut game_result: Option<GameResult> = None;
+        let mut client_team: Option<Team> = None;
         loop {
             let event_xml = Element::read_from(&mut reader)?;
 
@@ -124,7 +126,10 @@ impl<D> SCClient<D> where D: SCClientDelegate {
                 Ok(Event::Room { room_id, payload }) => {
                     info!("Got {} in room {}", payload, room_id);
                     match payload {
-                        EventPayload::Welcome(team) => self.delegate.on_welcome(team),
+                        EventPayload::Welcome(team) => {
+                            self.delegate.on_welcome(team);
+                            client_team = Some(team);
+                        },
                         EventPayload::GameResult(result) => {
                             self.delegate.on_game_end(&result);
                             game_result = Some(result);
@@ -160,5 +165,15 @@ impl<D> SCClient<D> where D: SCClientDelegate {
         }else {
             Err(SCError::InvalidState("Failed to receive game_result".to_string()))
         }
+    }
+    
+    /// Return team of the client
+    pub fn team(&self)->Option<Team>{
+        self.client_team.clone()
+    }
+    
+    /// Return reservation code, if any
+    pub fn reservation(&self)->Option<String>{
+        self.reservation_code.clone()
     }
 }
