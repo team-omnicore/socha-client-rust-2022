@@ -42,7 +42,7 @@ fn main() {
         debug_reader: parsed_args.opt_present("debug-reader"),
         debug_writer: parsed_args.opt_present("debug-writer")
     };
-    let client = SCClient::new(OwnGameLogic, debug_mode, reservation);
+    let mut client = SCClient::new(OwnGameLogic, debug_mode, reservation);
     
     let _result = client.connect(&host, port).expect("Error while running client.");
 }

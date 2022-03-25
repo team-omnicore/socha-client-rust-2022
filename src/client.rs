@@ -52,7 +52,7 @@ impl<D> SCClient<D> where D: SCClientDelegate {
     
     /// Blocks the thread and begins reading XML messages
     /// from the provided address via TCP.
-    pub fn connect(self, host: &str, port: u16) -> SCResult<GameResult> {
+    pub fn connect(&mut self, host: &str, port: u16) -> SCResult<GameResult> {
         let address = format!("{}:{}", host, port);
         let stream = TcpStream::connect(&address)?;
         info!("Connected to {}", address);
@@ -78,7 +78,7 @@ impl<D> SCClient<D> where D: SCClientDelegate {
     
     /// Blocks the thread and parses/handles game messages
     /// from the provided reader.
-    fn run(mut self, read: impl Read, write: impl Write) -> SCResult<GameResult> {
+    fn run(&mut self, read: impl Read, write: impl Write) -> SCResult<GameResult> {
         let mut buf = Vec::new();
         let mut reader = Reader::from_reader(BufReader::new(read));
         let mut writer = Writer::new(BufWriter::new(write));
@@ -87,7 +87,7 @@ impl<D> SCClient<D> where D: SCClientDelegate {
         writer.write_event(XmlEvent::Start(BytesStart::borrowed_name(b"protocol")))?;
         
         // Send join request
-        let join_xml: Element = match self.reservation_code {
+        let join_xml: Element = match &self.reservation_code {
             Some(code) => Request::JoinPrepared { reservation_code: code.to_owned() },
             None => Request::Join,
         }.into();
