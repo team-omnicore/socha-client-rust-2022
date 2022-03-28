@@ -136,6 +136,11 @@ where
                 }
                 Ok(Event::Left { room_id }) => {
                     info!("Left room {}", room_id);
+                    writer.write_event(XmlEvent::Empty(BytesStart::borrowed_name(
+                        b"sc.protocol.CloseConnection",
+                    )))?;
+                    writer.write_event(XmlEvent::End(BytesEnd::borrowed(b"protocol")))?;
+                    debug!("Wrote close connection");
                     break;
                 }
                 Ok(Event::Room { room_id, payload }) => {
