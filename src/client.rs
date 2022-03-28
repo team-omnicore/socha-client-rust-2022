@@ -129,7 +129,7 @@ where
         loop {
             let event_xml = Element::read_from(&mut reader)?;
 
-            info!("Got event {}", event_xml);
+            debug!("Got event {}", event_xml);
             match Event::try_from(&event_xml) {
                 Ok(Event::Joined { room_id }) => {
                     info!("Joined room {}", room_id);
@@ -139,7 +139,7 @@ where
                     break;
                 }
                 Ok(Event::Room { room_id, payload }) => {
-                    info!("Got {} in room {}", payload, room_id);
+                    debug!("Got {} in room {}", payload, room_id);
                     match payload {
                         EventPayload::Welcome(team) => {
                             self.delegate.on_welcome(team);
