@@ -1,5 +1,5 @@
-use std::{str::FromStr, iter::once};
 use std::fmt;
+use std::{iter::once, str::FromStr};
 
 use crate::util::{SCError, SCResult};
 
@@ -30,10 +30,10 @@ impl PieceType {
             Self::Herzmuschel => vec![Vec2::new(1, 1), Vec2::new(1, -1)],
             Self::Moewe => CARDINALS.into_iter().collect(),
             Self::Seestern => DIAGONALS.into_iter().chain(once(Vec2::new(1, 0))).collect(),
-            Self::Robbe => DIAGONALS.into_iter().flat_map(|v| [
-                Vec2::new(2 * v.x, v.y),
-                Vec2::new(v.x, 2 * v.y),
-            ].into_iter()).collect(),
+            Self::Robbe => DIAGONALS
+                .into_iter()
+                .flat_map(|v| [Vec2::new(2 * v.x, v.y), Vec2::new(v.x, 2 * v.y)].into_iter())
+                .collect(),
         }
     }
 }

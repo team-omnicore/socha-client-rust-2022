@@ -1,6 +1,6 @@
 /// Creates a new HashMap using a literal-like syntax. It automatically
 /// performs `Into` conversions for convenience.
-/// 
+///
 /// Source: https://stackoverflow.com/questions/27582739/how-do-i-create-a-hashmap-literal
 #[macro_export]
 macro_rules! hashmap {

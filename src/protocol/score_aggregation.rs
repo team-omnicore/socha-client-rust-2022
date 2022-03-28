@@ -24,7 +24,10 @@ impl FromStr for ScoreAggregation {
         match s {
             "SUM" => Ok(Self::Sum),
             "AVERAGE" => Ok(Self::Average),
-            _ => Err(SCError::UnknownVariant(format!("Unknown aggregation {}", s))),
+            _ => Err(SCError::UnknownVariant(format!(
+                "Unknown aggregation {}",
+                s
+            ))),
         }
     }
 }

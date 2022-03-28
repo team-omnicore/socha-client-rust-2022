@@ -2,7 +2,7 @@ use std::{collections::HashMap, ops::Index};
 
 use crate::util::{Element, SCError, SCResult};
 
-use super::{Vec2, Piece, Move, Team};
+use super::{Move, Piece, Team, Vec2};
 
 pub const BOARD_SIZE: usize = 8;
 
@@ -16,22 +16,32 @@ pub struct Board {
 impl Board {
     /// Creates a new empty board.
     pub fn empty() -> Self {
-        Self { pieces: HashMap::new() }
+        Self {
+            pieces: HashMap::new(),
+        }
     }
 
     /// Creates a new board with the given pieces.
     pub fn new(pieces: impl Into<HashMap<Vec2, Piece>>) -> Self {
-        Self { pieces: pieces.into() }
+        Self {
+            pieces: pieces.into(),
+        }
     }
 
     /// The pieces on the board.
-    pub fn pieces(&self) -> &HashMap<Vec2, Piece> { &self.pieces }
+    pub fn pieces(&self) -> &HashMap<Vec2, Piece> {
+        &self.pieces
+    }
 
     /// Fetches a piece on the board.
-    pub fn get(&self, pos: Vec2) -> Option<Piece> { self.pieces.get(&pos).cloned() }
+    pub fn get(&self, pos: Vec2) -> Option<Piece> {
+        self.pieces.get(&pos).cloned()
+    }
 
     /// Fetches a piece on the board mutably.
-    pub fn get_mut(&mut self, pos: Vec2) -> Option<&mut Piece> { self.pieces.get_mut(&pos) }
+    pub fn get_mut(&mut self, pos: Vec2) -> Option<&mut Piece> {
+        self.pieces.get_mut(&pos)
+    }
 
     /// Checks whether a position in in-bounds.
     pub fn is_in_bounds(pos: Vec2) -> bool {
@@ -48,9 +58,22 @@ impl Board {
     /// Applies a move to the board.
     pub fn perform(&mut self, m: Move) {
         if let Some(piece) = self.pieces.remove(&m.from()) {
-            debug_assert!(Board::is_in_bounds(m.to()), "Move destination {} wasn't in bounds!", m.to());
-            debug_assert!(piece.possible_directions().any(|v| v == m.delta()), "Move delta {} isn't in the allowed move for the piece {:?}!", m.delta(), piece);
-            let new_piece = self.pieces.get(&m.to()).map(|&p| piece.capture(p)).unwrap_or(piece);
+            debug_assert!(
+                Board::is_in_bounds(m.to()),
+                "Move destination {} wasn't in bounds!",
+                m.to()
+            );
+            debug_assert!(
+                piece.possible_directions().any(|v| v == m.delta()),
+                "Move delta {} isn't in the allowed move for the piece {:?}!",
+                m.delta(),
+                piece
+            );
+            let new_piece = self
+                .pieces
+                .get(&m.to())
+                .map(|&p| piece.capture(p))
+                .unwrap_or(piece);
             self.pieces.insert(m.to(), new_piece);
         } else {
             panic!("Cannot perform empty move!");
@@ -64,7 +87,10 @@ impl Board {
             let ambers = [
                 piece.is_amber(),
                 piece.piece_type().is_light() && pos.x == Self::start_line(piece.team().opponent()),
-            ].into_iter().map(|b| if b { 1 } else { 0 }).sum();
+            ]
+            .into_iter()
+            .map(|b| if b { 1 } else { 0 })
+            .sum();
             if ambers > 0 {
                 self.pieces.remove(&pos);
             }
@@ -83,7 +109,8 @@ impl Board {
     /// Fetches possible move deltas from the given position.
     pub fn possible_destinations_from(&self, pos: Vec2) -> Vec<Vec2> {
         if let Some(piece) = self.get(pos) {
-            piece.possible_directions()
+            piece
+                .possible_directions()
                 .filter(|&v| self.can_move(piece, pos + v))
                 .collect()
         } else {
@@ -122,11 +149,18 @@ impl TryFrom<&Element> for Board {
 mod tests {
     use std::str::FromStr;
 
-    use crate::{util::Element, game::{Piece, PieceType, Team, Board, Vec2}, hashmap};
+    use crate::{
+        game::{Board, Piece, PieceType, Team, Vec2},
+        hashmap,
+        util::Element,
+    };
 
     #[test]
     fn test_parsing() {
-        assert_eq!(Board::try_from(&Element::from_str(r#"
+        assert_eq!(
+            Board::try_from(
+                &Element::from_str(
+                    r#"
             <board>
                 <pieces>
                     <entry>
@@ -139,9 +173,15 @@ mod tests {
                     </entry>
                 </pieces>
             </board>
-        "#).unwrap()).unwrap(), Board::new(hashmap![
-            Vec2::new(0, 0) => Piece::new(PieceType::Herzmuschel, Team::One, 1),
-            Vec2::new(1, 0) => Piece::new(PieceType::Robbe, Team::Two, 1)
-        ]));
+        "#
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            Board::new(hashmap![
+                Vec2::new(0, 0) => Piece::new(PieceType::Herzmuschel, Team::One, 1),
+                Vec2::new(1, 0) => Piece::new(PieceType::Robbe, Team::Two, 1)
+            ])
+        );
     }
 }

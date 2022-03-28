@@ -1,6 +1,9 @@
 use std::fmt;
 
-use crate::{util::{Element, SCResult, SCError}, game::{State, Team}};
+use crate::{
+    game::{State, Team},
+    util::{Element, SCError, SCResult},
+};
 
 use super::GameResult;
 
@@ -23,11 +26,15 @@ impl fmt::Display for EventPayload {
             Self::Welcome(team) => write!(f, "Welcome (team: {})", team),
             Self::Memento(state) => write!(f, "Memento (turn: {})", state.turn()),
             Self::MoveRequest => write!(f, "MoveRequest"),
-            Self::GameResult(result) => write!(f, "GameResult (winner: {})", result
-                .winner()
-                .as_ref()
-                .map(|w| format!("{}", w.team()))
-                .unwrap_or_else(|| "none".to_owned())),
+            Self::GameResult(result) => write!(
+                f,
+                "GameResult (winner: {})",
+                result
+                    .winner()
+                    .as_ref()
+                    .map(|w| format!("{}", w.team()))
+                    .unwrap_or_else(|| "none".to_owned())
+            ),
         }
     }
 }

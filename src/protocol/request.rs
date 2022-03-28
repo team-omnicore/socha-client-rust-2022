@@ -15,16 +15,28 @@ pub enum Request {
     /// a reservation code.
     JoinPrepared { reservation_code: String },
     /// A message in a room.
-    Room { room_id: String, payload: RequestPayload },
+    Room {
+        room_id: String,
+        payload: RequestPayload,
+    },
 }
 
 impl From<Request> for Element {
     fn from(req: Request) -> Self {
         match req {
-            Request::Join => Element::new("join").attribute("gameType", GAME_TYPE).build(),
-            Request::JoinRoom { room_id } => Element::new("joinRoom").attribute("roomId", room_id).build(),
-            Request::JoinPrepared { reservation_code } => Element::new("joinPrepared").attribute("reservationCode", reservation_code).build(),
-            Request::Room { room_id, payload } => Element::new("room").attribute("roomId", room_id).child(payload).build(),
+            Request::Join => Element::new("join")
+                .attribute("gameType", GAME_TYPE)
+                .build(),
+            Request::JoinRoom { room_id } => Element::new("joinRoom")
+                .attribute("roomId", room_id)
+                .build(),
+            Request::JoinPrepared { reservation_code } => Element::new("joinPrepared")
+                .attribute("reservationCode", reservation_code)
+                .build(),
+            Request::Room { room_id, payload } => Element::new("room")
+                .attribute("roomId", room_id)
+                .child(payload)
+                .build(),
         }
     }
 }

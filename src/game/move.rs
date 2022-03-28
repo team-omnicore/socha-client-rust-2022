@@ -18,13 +18,19 @@ impl Move {
     }
 
     #[inline]
-    pub fn from(self) -> Vec2 { self.from }
+    pub fn from(self) -> Vec2 {
+        self.from
+    }
 
     #[inline]
-    pub fn to(self) -> Vec2 { self.to }
+    pub fn to(self) -> Vec2 {
+        self.to
+    }
 
     #[inline]
-    pub fn delta(self) -> Vec2 { self.to - self.from }
+    pub fn delta(self) -> Vec2 {
+        self.to - self.from
+    }
 }
 
 impl fmt::Display for Move {
@@ -48,8 +54,16 @@ impl From<Move> for Element {
     fn from(m: Move) -> Self {
         Element::new("data")
             .attribute("class", "move")
-            .child(Element::new("from").attribute("x", m.from.x).attribute("y", m.from.y))
-            .child(Element::new("to").attribute("x", m.to.x).attribute("y", m.to.y))
+            .child(
+                Element::new("from")
+                    .attribute("x", m.from.x)
+                    .attribute("y", m.from.y),
+            )
+            .child(
+                Element::new("to")
+                    .attribute("x", m.to.x)
+                    .attribute("y", m.to.y),
+            )
             .build()
     }
 }
@@ -58,18 +72,30 @@ impl From<Move> for Element {
 mod tests {
     use std::str::FromStr;
 
-    use crate::{util::Element, game::{Move, Vec2}};
+    use crate::{
+        game::{Move, Vec2},
+        util::Element,
+    };
 
     #[test]
     fn test_parsing() {
-        assert_eq!(Move::try_from(&Element::from_str(r#"
+        assert_eq!(
+            Move::try_from(
+                &Element::from_str(
+                    r#"
             <data class="move">
                 <from x="3" y="4" />
                 <to x="5" y="9" />
             </data>
-        "#).unwrap()).unwrap(), Move {
-            from: Vec2::new(3, 4),
-            to: Vec2::new(5, 9),
-        });
+        "#
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            Move {
+                from: Vec2::new(3, 4),
+                to: Vec2::new(5, 9),
+            }
+        );
     }
 }

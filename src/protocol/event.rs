@@ -1,6 +1,7 @@
-use crate::util::{Element, SCResult, SCError};
+use crate::util::{Element, SCError, SCResult};
 
 use super::EventPayload;
+use std::convert::TryInto;
 
 /// A message from the server.
 #[derive(Debug)]
@@ -10,7 +11,10 @@ pub enum Event {
     /// Notifies the client that they left a room.
     Left { room_id: String },
     /// A message in a room.
-    Room { room_id: String, payload: EventPayload },
+    Room {
+        room_id: String,
+        payload: EventPayload,
+    },
 }
 
 impl TryFrom<&Element> for Event {
@@ -18,8 +22,12 @@ impl TryFrom<&Element> for Event {
 
     fn try_from(elem: &Element) -> SCResult<Self> {
         match elem.name() {
-            "joined" => Ok(Self::Joined { room_id: elem.attribute("roomId")?.to_owned() }),
-            "left" => Ok(Self::Left { room_id: elem.attribute("roomId")?.to_owned() }),
+            "joined" => Ok(Self::Joined {
+                room_id: elem.attribute("roomId")?.to_owned(),
+            }),
+            "left" => Ok(Self::Left {
+                room_id: elem.attribute("roomId")?.to_owned(),
+            }),
             "room" => Ok(Self::Room {
                 room_id: elem.attribute("roomId")?.to_owned(),
                 payload: elem.child_by_name("data")?.try_into()?,

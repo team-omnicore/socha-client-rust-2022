@@ -1,4 +1,4 @@
-use crate::util::{SCError, SCResult, Element};
+use crate::util::{Element, SCError, SCResult};
 
 use super::ScoreAggregation;
 
@@ -11,17 +11,27 @@ pub struct ScoreDefinitionFragment {
 
 impl ScoreDefinitionFragment {
     pub fn new(name: &str, aggregation: ScoreAggregation, relevant_for_ranking: bool) -> Self {
-        Self { name: name.to_owned(), aggregation, relevant_for_ranking }
+        Self {
+            name: name.to_owned(),
+            aggregation,
+            relevant_for_ranking,
+        }
     }
 
     #[inline]
-    pub fn name(&self) -> &str { self.name.as_str() }
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
 
     #[inline]
-    pub fn aggregation(&self) -> ScoreAggregation { self.aggregation }
+    pub fn aggregation(&self) -> ScoreAggregation {
+        self.aggregation
+    }
 
     #[inline]
-    pub fn relevant_for_ranking(&self) -> bool { self.relevant_for_ranking }
+    pub fn relevant_for_ranking(&self) -> bool {
+        self.relevant_for_ranking
+    }
 }
 
 impl TryFrom<&Element> for ScoreDefinitionFragment {
@@ -31,7 +41,10 @@ impl TryFrom<&Element> for ScoreDefinitionFragment {
         Ok(ScoreDefinitionFragment {
             name: elem.attribute("name")?.to_owned(),
             aggregation: elem.child_by_name("aggregation")?.content().parse()?,
-            relevant_for_ranking: elem.child_by_name("relevantForRanking")?.content().parse()?,
+            relevant_for_ranking: elem
+                .child_by_name("relevantForRanking")?
+                .content()
+                .parse()?,
         })
     }
 }

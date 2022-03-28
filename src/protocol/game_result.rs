@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::util::{Element, SCError, SCResult};
 
-use super::{ScoreDefinition, Player, Score};
+use super::{Player, Score, ScoreDefinition};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GameResult {
@@ -13,18 +13,32 @@ pub struct GameResult {
 
 impl GameResult {
     #[inline]
-    pub fn new(definition: ScoreDefinition, scores: impl Into<HashMap<Player, Score>>, winner: Option<Player>) -> Self {
-        Self { definition, scores: scores.into(), winner }
+    pub fn new(
+        definition: ScoreDefinition,
+        scores: impl Into<HashMap<Player, Score>>,
+        winner: Option<Player>,
+    ) -> Self {
+        Self {
+            definition,
+            scores: scores.into(),
+            winner,
+        }
     }
 
     #[inline]
-    pub fn definition(&self) -> &ScoreDefinition { &self.definition }
+    pub fn definition(&self) -> &ScoreDefinition {
+        &self.definition
+    }
 
     #[inline]
-    pub fn scores(&self) -> &HashMap<Player, Score> { &self.scores }
+    pub fn scores(&self) -> &HashMap<Player, Score> {
+        &self.scores
+    }
 
     #[inline]
-    pub fn winner(&self) -> &Option<Player> { &self.winner }
+    pub fn winner(&self) -> &Option<Player> {
+        &self.winner
+    }
 }
 
 impl TryFrom<&Element> for GameResult {
@@ -42,7 +56,10 @@ impl TryFrom<&Element> for GameResult {
                     Ok((player, score))
                 })
                 .collect::<SCResult<_>>()?,
-            winner: elem.child_by_name("winner").ok().and_then(|w| w.try_into().ok()),
+            winner: elem
+                .child_by_name("winner")
+                .ok()
+                .and_then(|w| w.try_into().ok()),
         })
     }
 }
@@ -51,11 +68,22 @@ impl TryFrom<&Element> for GameResult {
 mod tests {
     use std::str::FromStr;
 
-    use crate::{util::Element, protocol::{ScoreDefinition, ScoreDefinitionFragment, ScoreAggregation, GameResult, Player, Score, ScoreCause}, game::Team, hashmap};
+    use crate::{
+        game::Team,
+        hashmap,
+        protocol::{
+            GameResult, Player, Score, ScoreAggregation, ScoreCause, ScoreDefinition,
+            ScoreDefinitionFragment,
+        },
+        util::Element,
+    };
 
     #[test]
     fn test_parsing() {
-        assert_eq!(GameResult::try_from(&Element::from_str(r#"
+        assert_eq!(
+            GameResult::try_from(
+                &Element::from_str(
+                    r#"
             <data class="result">
                 <definition>
                     <fragment name="Siegpunkte">
@@ -85,16 +113,22 @@ mod tests {
                 </scores>
                 <winner team="ONE"/>
             </data>
-        "#).unwrap()).unwrap(), GameResult::new(
-            ScoreDefinition::new([
-                ScoreDefinitionFragment::new("Siegpunkte", ScoreAggregation::Sum, true),
-                ScoreDefinitionFragment::new("∅ Punkte", ScoreAggregation::Average, true),
-            ]),
-            hashmap![
-                Player::new(Some("rad"), Team::One) => Score::new(ScoreCause::Regular, "", [2, 27]),
-                Player::new(Some("blues"), Team::Two) => Score::new(ScoreCause::Left, "Player left", [0, 15])
-            ],
-            Some(Player::new(None, Team::One))
-        ));
+        "#
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            GameResult::new(
+                ScoreDefinition::new([
+                    ScoreDefinitionFragment::new("Siegpunkte", ScoreAggregation::Sum, true),
+                    ScoreDefinitionFragment::new("∅ Punkte", ScoreAggregation::Average, true),
+                ]),
+                hashmap![
+                    Player::new(Some("rad"), Team::One) => Score::new(ScoreCause::Regular, "", [2, 27]),
+                    Player::new(Some("blues"), Team::Two) => Score::new(ScoreCause::Left, "Player left", [0, 15])
+                ],
+                Some(Player::new(None, Team::One))
+            )
+        );
     }
 }

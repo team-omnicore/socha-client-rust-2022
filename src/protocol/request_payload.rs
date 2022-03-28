@@ -1,4 +1,4 @@
-use crate::{util::Element, game::Move};
+use crate::{game::Move, util::Element};
 
 /// The data of a room message to the server.
 #[derive(Debug, Clone)]

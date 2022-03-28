@@ -1,4 +1,7 @@
-use crate::{game::Team, util::{Element, SCError, SCResult}};
+use crate::{
+    game::Team,
+    util::{Element, SCError, SCResult},
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Player {
@@ -9,14 +12,21 @@ pub struct Player {
 impl Player {
     #[inline]
     pub fn new(name: Option<&str>, team: Team) -> Self {
-        Self { name: name.map(|n| n.to_string()), team }
+        Self {
+            name: name.map(|n| n.to_string()),
+            team,
+        }
     }
 
     #[inline]
-    pub fn name(&self) -> Option<&str> { self.name.as_ref().map(|n| n.as_str()) }
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_ref().map(|n| n.as_str())
+    }
 
     #[inline]
-    pub fn team(&self) -> Team { self.team }
+    pub fn team(&self) -> Team {
+        self.team
+    }
 }
 
 impl TryFrom<&Element> for Player {
@@ -34,16 +44,34 @@ impl TryFrom<&Element> for Player {
 mod tests {
     use std::str::FromStr;
 
-    use crate::{util::Element, protocol::Player, game::Team};
+    use crate::{game::Team, protocol::Player, util::Element};
 
     #[test]
     fn test_parsing() {
-        assert_eq!(Player::try_from(&Element::from_str(r#"
+        assert_eq!(
+            Player::try_from(
+                &Element::from_str(
+                    r#"
             <player name="Alice" team="ONE" />
-        "#).unwrap()).unwrap(), Player::new(Some("Alice"), Team::One));
+        "#
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            Player::new(Some("Alice"), Team::One)
+        );
 
-        assert_eq!(Player::try_from(&Element::from_str(r#"
+        assert_eq!(
+            Player::try_from(
+                &Element::from_str(
+                    r#"
             <player team="TWO" />
-        "#).unwrap()).unwrap(), Player::new(None, Team::Two));
+        "#
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            Player::new(None, Team::Two)
+        );
     }
 }

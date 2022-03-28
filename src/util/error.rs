@@ -1,7 +1,7 @@
-use std::io::Error as IoError;
-use std::str::{ParseBoolError, Utf8Error};
-use std::num::{ParseIntError, ParseFloatError};
 use quick_xml::Error as XmlError;
+use std::io::Error as IoError;
+use std::num::{ParseFloatError, ParseIntError};
+use std::str::{ParseBoolError, Utf8Error};
 
 use super::Element;
 
@@ -22,37 +22,53 @@ pub enum SCError {
     InvalidState(String),
     ServerError(String),
     Eof,
-    Custom(String)
+    Custom(String),
 }
 
 impl From<IoError> for SCError {
-    fn from(error: IoError) -> Self { Self::Io(error) }
+    fn from(error: IoError) -> Self {
+        Self::Io(error)
+    }
 }
 
 impl From<ParseIntError> for SCError {
-    fn from(error: ParseIntError) -> Self { Self::ParseInt(error) }
+    fn from(error: ParseIntError) -> Self {
+        Self::ParseInt(error)
+    }
 }
 
 impl From<ParseFloatError> for SCError {
-    fn from(error: ParseFloatError) -> Self { Self::ParseFloat(error) }
+    fn from(error: ParseFloatError) -> Self {
+        Self::ParseFloat(error)
+    }
 }
 
 impl From<ParseBoolError> for SCError {
-    fn from(error: ParseBoolError) -> Self { Self::ParseBool(error) }
+    fn from(error: ParseBoolError) -> Self {
+        Self::ParseBool(error)
+    }
 }
 
 impl From<Utf8Error> for SCError {
-    fn from(error: Utf8Error) -> Self { Self::Utf8(error) }
+    fn from(error: Utf8Error) -> Self {
+        Self::Utf8(error)
+    }
 }
 
 impl From<XmlError> for SCError {
-    fn from(error: XmlError) -> Self { Self::Xml(error) }
+    fn from(error: XmlError) -> Self {
+        Self::Xml(error)
+    }
 }
 
 impl From<String> for SCError {
-    fn from(error: String) -> Self { Self::Custom(error) }
+    fn from(error: String) -> Self {
+        Self::Custom(error)
+    }
 }
 
 impl<'a> From<&'a str> for SCError {
-    fn from(error: &'a str) -> Self { Self::Custom(error.to_owned()) }
+    fn from(error: &'a str) -> Self {
+        Self::Custom(error.to_owned())
+    }
 }

@@ -1,21 +1,24 @@
-use std::{fmt, ops::{Add, Sub, Mul, Div, DivAssign, MulAssign}};
+use std::{
+    fmt,
+    ops::{Add, Div, DivAssign, Mul, MulAssign, Sub},
+};
 
 use crate::util::{Element, SCError, SCResult};
 
 /// The four vectors in cardinal direction.
 pub const CARDINALS: [Vec2; 4] = [
-    Vec2 { x: -1, y:  0 },
-    Vec2 { x:  1, y:  0 },
-    Vec2 { x:  0, y: -1 },
-    Vec2 { x:  0, y:  1 },
+    Vec2 { x: -1, y: 0 },
+    Vec2 { x: 1, y: 0 },
+    Vec2 { x: 0, y: -1 },
+    Vec2 { x: 0, y: 1 },
 ];
 
 /// The four vectors in diagonal direction.
 pub const DIAGONALS: [Vec2; 4] = [
     Vec2 { x: -1, y: -1 },
-    Vec2 { x: -1, y:  1 },
-    Vec2 { x:  1, y: -1 },
-    Vec2 { x:  1, y:  1 },
+    Vec2 { x: -1, y: 1 },
+    Vec2 { x: 1, y: -1 },
+    Vec2 { x: 1, y: 1 },
 ];
 
 /// A position on the board or 2D integer vector.
@@ -40,15 +43,21 @@ impl Vec2 {
 
     /// The area of the rectangle spanned by this vector.
     #[inline]
-    pub fn area(self) -> i32 { (self.x * self.y).abs() }
+    pub fn area(self) -> i32 {
+        (self.x * self.y).abs()
+    }
 
     /// The squared length of this vector.
     #[inline]
-    pub fn squared_length(self) -> i32 { self.x * self.x + self.y * self.y }
+    pub fn squared_length(self) -> i32 {
+        self.x * self.x + self.y * self.y
+    }
 
     /// The length of this vector.
     #[inline]
-    pub fn length(self) -> f32 { (self.squared_length() as f32).sqrt() }
+    pub fn length(self) -> f32 {
+        (self.squared_length() as f32).sqrt()
+    }
 }
 
 impl Add for Vec2 {
@@ -115,7 +124,10 @@ impl TryFrom<&Element> for Vec2 {
     type Error = SCError;
 
     fn try_from(elem: &Element) -> SCResult<Self> {
-        Ok(Vec2::new(elem.attribute("x")?.parse()?, elem.attribute("y")?.parse()?))
+        Ok(Vec2::new(
+            elem.attribute("x")?.parse()?,
+            elem.attribute("y")?.parse()?,
+        ))
     }
 }
 
@@ -123,12 +135,21 @@ impl TryFrom<&Element> for Vec2 {
 mod tests {
     use std::str::FromStr;
 
-    use crate::{util::Element, game::Vec2};
+    use crate::{game::Vec2, util::Element};
 
     #[test]
     fn test_parsing() {
-        assert_eq!(Vec2::try_from(&Element::from_str(r#"
+        assert_eq!(
+            Vec2::try_from(
+                &Element::from_str(
+                    r#"
             <coords x="23" y="0" />
-        "#).unwrap()).unwrap(), Vec2::new(23, 0));
+        "#
+                )
+                .unwrap()
+            )
+            .unwrap(),
+            Vec2::new(23, 0)
+        );
     }
 }

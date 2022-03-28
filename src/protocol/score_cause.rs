@@ -10,7 +10,7 @@ pub enum ScoreCause {
     RuleViolation,
     SoftTimeout,
     HardTimeout,
-    Unknown
+    Unknown,
 }
 
 impl FromStr for ScoreCause {
@@ -24,7 +24,10 @@ impl FromStr for ScoreCause {
             "SOFT_TIMEOUT" => Ok(Self::SoftTimeout),
             "HARD_TIMEOUT" => Ok(Self::HardTimeout),
             "UNKNOWN" => Ok(Self::Unknown),
-            _ => Err(SCError::UnknownVariant(format!("Unknown score cause {}", raw)))
+            _ => Err(SCError::UnknownVariant(format!(
+                "Unknown score cause {}",
+                raw
+            ))),
         }
     }
 }
