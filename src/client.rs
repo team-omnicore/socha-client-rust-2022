@@ -18,7 +18,7 @@ pub trait SCClientDelegate {
     fn on_update_state(&mut self, _state: &State) {}
 
     /// Invoked when the game ends.
-    fn on_game_end(&mut self, _result: &GameResult) {}
+    fn on_game_end(&mut self, _result: &GameResult, _my_team: Team) {}
 
     /// Invoked when the welcome message is received
     /// with the player's team.
@@ -151,7 +151,8 @@ where
                             self.client_team = Some(team);
                         }
                         EventPayload::GameResult(result) => {
-                            self.delegate.on_game_end(&result);
+                            self.delegate
+                                .on_game_end(&result, self.client_team.unwrap());
                             game_result = Some(result);
                         }
                         EventPayload::Memento(new_state) => {
